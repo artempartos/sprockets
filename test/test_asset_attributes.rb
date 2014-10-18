@@ -101,11 +101,13 @@ class TestAssetAttributes < Sprockets::TestCase
       pathname("gallery.css.erb").content_type
     assert_equal "application/javascript",
       pathname("jquery.tmpl.min.js").content_type
+    assert_equal "application/javascript",
+      pathname("application.coffee").content_type
 
-    if Tilt::CoffeeScriptTemplate.respond_to?(:default_mime_type)
-      assert_equal "application/javascript",
-        pathname("application.coffee").content_type
-    end
+    env = Sprockets::Environment.new
+    env.register_engine '.haml', proc {}, mime_type: 'text/html'
+    env.register_engine '.ngt', proc {}, mime_type: 'application/javascript'
+    assert_equal "application/javascript", env.attributes_for("foo.ngt.haml").content_type
   end
 
   private
